@@ -21,7 +21,7 @@ function preload(){
 }
 
 function setup() {
-  createCanvas(400, 400, WEBGL);
+  createCanvas(windowWidth, windowHeight, WEBGL);
   
     let gui = new dat.GUI();
   gui.add(settings, 'sensor_distance', 1, 100);
