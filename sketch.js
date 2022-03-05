@@ -2,17 +2,13 @@ let basicShader;
 
 // dat gui
 let controller = function(){
-    this.sensor_distance =  10;
-	this.sensor_angle = 40/180*Math.PI; // radians
-	this.turning_speed = 40/180*Math.PI; // radians
-	this.speed = 3;
-	this.decay_factor = 0.9;
-	this.deposit_amount = 0.2;
-	this.num_agents = 5000;
-	this.start_in_circle = false; // otherwise start randomly
-	this.highlight_agents = false;
-	this.random_turning = false; // randomly turn within the limits of turning_speed
-	this.wrap_around = true;
+    this.Color_change =  2.6;
+    this.Color_change_2 = 14;
+    this.Edge_Thick = 65;
+    this.Smooth_Edge =  7;
+    this.Contrast =  0.8;
+    this.Num_Cells =  8;
+    this.Repulsion_Loc =  3.8;
 }
 let settings = new controller();
 
@@ -24,27 +20,28 @@ function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
   
     let gui = new dat.GUI();
-  gui.add(settings, 'sensor_distance', 1, 100);
-  gui.add(settings, 'sensor_angle', 0,PI);
-  gui.add(settings, 'turning_speed', 0,PI);
-  gui.add(settings, 'speed', 0,40);
-  gui.add(settings, 'decay_factor', 0, 1);
-  gui.add(settings, 'deposit_amount', 0,1);
-  gui.add(settings, 'num_agents', 1,20000);
-  gui.add(settings, 'start_in_circle');
-  gui.add(settings, 'highlight_agents');
-  gui.add(settings, 'random_turning');
-  gui.add(settings, 'wrap_around');
-  let obj = { reset_sim: function () { reset(); } }
-  gui.add(obj, 'reset_sim');
+  gui.add(settings, 'Color_change', 0, 20);
+  gui.add(settings, 'Color_change_2', 0, 50);
+  gui.add(settings, 'Edge_Thick', 0,280);
+  gui.add(settings, 'Smooth_Edge', 0,10);
+  gui.add(settings, 'Contrast', 0,20);
+  gui.add(settings, 'Num_Cells', 2,10);
+  gui.add(settings, 'Repulsion_Loc', 0,10);
+  
 }
 
 function draw() {
   background(0);
   
   basicShader.setUniform("u_resolution", [width*2, height*2]);
-  basicShader.setUniform('u_time', frameCount * 0.05);
-  basicShader.setUniform('sensor_distance', settings.sensor_distance);
+  basicShader.setUniform('u_time', frameCount * 0.02);
+  basicShader.setUniform('Color_change', settings.Color_change);
+  basicShader.setUniform('Color_change_2', settings.Color_change_2);
+  basicShader.setUniform('Edge_Thick', settings.Edge_Thick);
+  basicShader.setUniform('Smooth_Edge', settings.Smooth_Edge);
+  basicShader.setUniform('Contrast', settings.Contrast);
+  basicShader.setUniform('Num_Cells', settings.Num_Cells);
+  basicShader.setUniform('Repulsion_Loc', settings.Repulsion_Loc);
   
   shader(basicShader);
   
