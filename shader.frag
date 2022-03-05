@@ -5,7 +5,13 @@ uniform vec2 u_resolution;
 
 uniform float u_time;
 
-uniform float sensor_distance;
+uniform float Color_change;
+uniform float Color_change_2;
+uniform float Edge_Thick;
+uniform float Smooth_Edge;
+uniform float Contrast;
+uniform float Num_Cells;
+uniform float Repulsion_Loc;
 
 mat2 m = mat2( 0.80,  0.60,
               -0.60,  0.80 );
@@ -92,7 +98,7 @@ float funcS( vec2 p )
 
 float funcC( vec2 p, out vec4 res )
 {
-  //new param to change (cells)
+
     p *= 1.1 + 0.2*sin(1.0*u_time)*(1.0-0.75*length(p));
     p.x += u_time*0.04;
     p *= 0.7;
@@ -100,8 +106,8 @@ float funcC( vec2 p, out vec4 res )
     p.y += 0.3*fbm4( 1.0*p.yx + vec2(0.0,-u_time)*0.04 );
     vec3 info = vec3(0.0);
     vec2 c = celular( 4.0*p, info );
-  //smooth second parameter cool patt
-    float f = smoothstep( 0.0,5.5, c.y - c.x );
+
+    float f = smoothstep( 0.0,Smooth_Edge, c.y - c.x );
     res  = vec4( c.xy, info.z, fbm4( 2.0*vec2(info.xy)) );
     return f;
 }
@@ -115,12 +121,12 @@ vec3 doMagic(vec2 p)
     // normal
     //vec2 e = vec2( 2.0/iResolution.x, 0.0 );
     vec2 e = vec2( 2.0/800.0, 0.0 );
-  //new parametere *16
+
     vec3 nor = normalize(vec3(funcS(p+e.xy) - f,
                funcS(p+e.yx) - f,
-                              16.0*e.x ));
+                              Edge_Thick*e.x ));
     //contrast 
-    vec3 col = vec3(1.0,1.0,1.0)*0.2;
+    vec3 col = vec3(1.0,1.0,1.0)*Contrast;
     col *= f;
     col = mix( col, vec3(0.2,0.3,0.4), 1.0-c.x );
     col *= 1.0 + 1.0*vec3(c.w*c.w);
@@ -129,7 +135,7 @@ vec3 doMagic(vec2 p)
     float dif = clamp( 0.2+0.8*dot( nor, vec3(0.57703) ), 0.0, 1.0 );
   
   //change color
-    vec3 lig = dif*vec3(sensor_distance,3.15,sensor_distance) + nor.z*vec3(0.1,0.2,0.5) + vec3(0.5);
+    vec3 lig = dif*vec3(Color_change,Color_change_2,Color_change) + nor.z*vec3(0.1,0.2,0.5) + vec3(0.5);
     col *= lig;
     col = 1.0-col;
 
@@ -139,7 +145,7 @@ vec3 doMagic(vec2 p)
 void main( )
 {
     vec2 q = gl_FragCoord.xy / u_resolution.xy;
-    vec2 p = -1.0 + 2.4 * q;
+    vec2 p = -Repulsion_Loc + Num_Cells * q;
     p.x *= u_resolution.x/u_resolution.y;
     gl_FragColor = vec4( doMagic( p ), 1.0 );
 }
